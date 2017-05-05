@@ -8,6 +8,7 @@ import java.util.*;
  */
 public class X174_Error_Free {
     BufferedReader reader;
+    char[] alphabet = new char[]{'$', 'A', 'C', 'G', 'T' };
 
     public static void main(String[] args) throws IOException {
         new X174_Error_Free( new InputStreamReader(System.in ) ).run();
@@ -115,7 +116,7 @@ public class X174_Error_Free {
     public void PreprocessBWT(String bwt, Map<Character, Integer> starts, Map<Character, int[]> occ_counts_before, int[] counts, int[] last2first) {
         // Implement this function yourself
         int n = bwt.length();
-        char[] alphabet = new char[]{'$', 'A', 'C', 'G', 'T' };
+        //char[] alphabet = new char[]{'$', 'A', 'C', 'G', 'T' };
 
         for(int i=n-1; i>=0; i--){
             starts.put( bwt.charAt(i) , i);
@@ -185,6 +186,39 @@ public class X174_Error_Free {
         return 0;
 
     }
+
+    public int countOverlap(String pattern, String s, Map<Character, Integer> starts, Map<Character, int[]> occ_counts_before, int[] last2first, int[] counts) {
+        int n = s.length();
+        int m = pattern.length() - 2; //last character $ in the pattern doesn't count
+        int top=0, bottom = n-1;
+
+        char character;
+        int firstSymbol = counts[ s.charAt(0) ];
+        int overlap = 0;
+
+        while(top <= bottom){
+            if(top == firstSymbol){
+                overlap = pattern.length() - 2 - m;
+            }
+
+            if(m > -1){
+                character = pattern.charAt(m);
+                m--;
+
+                if(!starts.containsKey(character)){
+                    return overlap;
+                }
+
+                top = last2first[ starts.get(character) ] + occ_counts_before.get(character)[top];
+                bottom = last2first[starts.get(character)] + occ_counts_before.get(character)[bottom+1] - 1;
+
+
+            }
+        }
+        return overlap;
+
+    }
+
 
     String inverseBWT(String bwt) {
         StringBuilder result = new StringBuilder();

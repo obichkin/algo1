@@ -300,7 +300,7 @@ public class SuffixTreeFromArray1 {
                 stackSize += 1;
             }
             result.add(suffixTree.get(node).get(edgeIndex).start + " " + suffixTree.get(node).get(edgeIndex).end);
-            nodeStack[stackSize] = suffixTree.get(node).get(edgeIndex).node;
+            //nodeStack[stackSize] = suffixTree.get(node).get(edgeIndex).node;
             edgeIndexStack[stackSize] = 0;
             stackSize += 1;
         }
