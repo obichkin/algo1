@@ -39,6 +39,7 @@ public class X174_Error_Free {
 
         for(int i=0; i<n; i++){
             bwt[i] = txt[ (suffix_array[i]+n-1)%n ];
+
         }
 
 
@@ -187,21 +188,15 @@ public class X174_Error_Free {
 
     }
 
-    public int countOverlap(String pattern, String s, Map<Character, Integer> starts, Map<Character, int[]> occ_counts_before, int[] last2first, int[] counts) {
+    public int countOverlap(String pattern, String s, Map<Character, Integer> starts, Map<Character, int[]> occ_counts_before, int[] last2first, Integer startSuffix) {
         int n = s.length();
         int m = pattern.length() - 2; //last character $ in the pattern doesn't count
         int top=0, bottom = n-1;
 
         char character;
-        int firstSymbol = counts[ s.charAt(0) ];
         int overlap = 0;
 
-        while(top <= bottom){
-            if(top == firstSymbol){
-                overlap = pattern.length() - 2 - m;
-            }
-
-            if(m > -1){
+        while( top <= bottom && m>=0 ){
                 character = pattern.charAt(m);
                 m--;
 
@@ -212,8 +207,10 @@ public class X174_Error_Free {
                 top = last2first[ starts.get(character) ] + occ_counts_before.get(character)[top];
                 bottom = last2first[starts.get(character)] + occ_counts_before.get(character)[bottom+1] - 1;
 
+                if(top <= startSuffix && startSuffix <= bottom){
+                    overlap = pattern.length() - 2 - m;
+                }
 
-            }
         }
         return overlap;
 
