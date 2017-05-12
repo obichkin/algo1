@@ -163,7 +163,7 @@ public class X174_Error_Free {
     public int CountOccurrences(String pattern, String bwt, Map<Character, Integer> starts, Map<Character, int[]> occ_counts_before, int[] last2first) {
         // Implement this function yourself
         int n = bwt.length();
-        int m = pattern.length() - 2; //last character $ in the pattern doesn't count
+        int m = pattern.length() - 1;
         int top=0, bottom = n-1;
 
         char character;
@@ -253,11 +253,37 @@ public class X174_Error_Free {
         int n = 5;  //number of strings
         int m = 3;  //sting length
 
-        List<String> list = new ArrayList<>();
+        List<String> reads = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        String s;
+
+
 
         for(int i=0; i<n; i++){
-            list.add(reader.readLine());
+            s = reader.readLine();
+            reads.add(s);
+            sb.append(s); sb.append("$");
         }
+
+        String FM_index = sb.toString();
+        int FM_length = FM_index.length();
+        Integer suffix_array[] = new Integer[FM_length];
+        String bwt = bwt( FM_index, suffix_array );
+        Map<Character, Integer> starts = new HashMap<Character, Integer>();
+        Map<Character, int[]> occ_counts_before = new HashMap<Character, int[]>();
+        int[] counts = new int[128];
+        int[] last2first = new int[FM_index.length()];
+
+        PreprocessBWT(bwt, starts, occ_counts_before, counts, last2first);
+
+
+
+        //for(int i=0; i<FM_length; i++)            System.out.println(FM_index.substring(suffix_array[i]));
+        for(int i=0; i<n; i++){
+            int x = CountOccurrences( reads.get(i), bwt, starts, occ_counts_before, last2first);
+            System.out.println( reads.get(i) + " " + x );
+        }
+
 
 
 
