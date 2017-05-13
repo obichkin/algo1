@@ -7,10 +7,13 @@ import java.util.*;
  * Created by mobichkin on 27.04.17.
  */
 public class X174_Error_Free {
+
+    int n = 1618;  //number of strings
+    int read_length = 100;  //sting length
+
     BufferedReader reader;
     char[] alphabet = new char[]{'$', 'A', 'C', 'G', 'T' };
-    int n = 5;  //number of strings
-    int read_length = 3;  //sting length
+
     List<String> reads;
     String FM_index;
     int FM_length;
@@ -20,14 +23,27 @@ public class X174_Error_Free {
     Map<Character, int[]> occ_counts_before;
     int[] counts;
     int[] last2first;
+    Graph graph;
+    int start_vertex=0;
+    int max_overlap=0;
+    int min_overlap=100;
+    List<Edge> genomcycle;
+    String genom;
 
-
-    class Edge {
-
-    }
 
     public static void main(String[] args) throws IOException {
-        new X174_Error_Free( new InputStreamReader(System.in ) ).run();
+        //new X174_Error_Free( new InputStreamReader(System.in ) ).run();
+
+        new Thread(null, new Runnable() {
+            public void run() {
+                try {
+                    new X174_Error_Free( new InputStreamReader(System.in ) ).run();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, "1", 1 << 26).start();
+
     }
 
 
@@ -43,6 +59,7 @@ public class X174_Error_Free {
         Arrays.sort(suffix_array, new Comparator<Integer>() {
             @Override
             public int compare(Integer o1, Integer o2) {
+
                 while(txt[o1%n]==txt[o2%n]){
                     o1++;
                     o2++;
@@ -257,11 +274,21 @@ public class X174_Error_Free {
                 for(int i=top; i<=bottom; i++){
                     if( bwt.charAt(i) == '$' &&  //this is the beginning of the string
                            suffix_array[i] != read_id*(read_length+1)    ){      //exclude overlap of read_id with itself
+
                         overlap = pattern.length() - 1 - m;
 
-                        String string = FM_index.substring( suffix_array[i], suffix_array[i] + read_length);
+                        //start from the biggest overlap
+                        //if(overlap > max_overlap){
+                        //    max_overlap = overlap;
+                        //    start_vertex = read_id;
+                        //}
 
-                        System.out.println(pattern + " overlaps by " + overlap + " with " + string);
+                        int string_id = suffix_array[i] / (read_length+1);
+
+                        //String string = FM_index.substring( suffix_array[i], suffix_array[i] + read_length);
+                        // System.out.println(pattern + " overlaps by " + overlap + " with " + string);
+                        graph.vertices.get( read_id ).add( new Edge( string_id, overlap ));  //populating the graph
+
                     }
 
                 }
@@ -330,21 +357,132 @@ public class X174_Error_Free {
         last2first = new int[FM_index.length()];
 
         PreprocessBWT(bwt, starts, occ_counts_before, counts, last2first);
-
+        graph = new Graph(n);
 
 
         //for(int i=0; i<FM_length; i++)            System.out.println(FM_index.substring(suffix_array[i]));
+
         for(int i=0; i<n; i++){
             overlapRead(i);
+
+            // start from the least overlap
+            //if( graph.vertices.get(i).peek().weight < min_overlap ){
+//                min_overlap = graph.vertices.get(i).peek().weight;
+//                start_vertex = i;
+//            }
+
+        }
+
+
+        //random start vertex
+        Random random = new Random();
+        start_vertex = random.nextInt(n);
+
+        genomcycle = hamiltonCycle();
+
+        genom = constructGenom();
+
+        System.out.println(genom);
+
+
+
+    }
+
+
+    public String constructGenom(){
+        StringBuilder sb = new StringBuilder();
+        sb.append( reads.get(start_vertex));
+
+        for(Edge edge: genomcycle){
+            sb.append( reads.get(edge.to).substring( edge.weight ) );
+        }
+
+        Edge lastEdge =genomcycle.get( genomcycle.size()-1 );
+        if( lastEdge.to == start_vertex ){
+            sb.delete(sb.length() - lastEdge.weight, sb.length() - 1);
+
+        }
+
+        return sb.toString();
+    }
+
+
+    public List<Edge> hamiltonCycle(){
+        List<Edge> result = new ArrayList<>();
+        Set<Integer> visited = new HashSet<Integer>();
+        int current = start_vertex;
+        Edge edge = null;
+
+
+
+        visited.add(current);
+
+        while(!graph.vertices.get(current).isEmpty()){
+
+            edge = graph.vertices.get(current).poll();
+            if (visited.contains(edge.to)){
+                continue;
+            }
+
+            current = edge.to;
+            result.add(edge);
+            visited.add(current);
 
         }
 
 
 
 
+
+        return result;
     }
 
     public X174_Error_Free(InputStreamReader reader) {
         this.reader = new BufferedReader(reader);
+    }
+}
+
+
+
+
+
+class Graph {
+    List<Queue<Edge>> vertices;
+
+    Graph(int n) {
+        vertices = new ArrayList<>(n);
+        for(int i=0; i<n; i++){
+            vertices.add( new PriorityQueue<Edge>() );
+        }
+    }
+
+
+    void printGraph(List<String> reads){
+        for(int i=0; i<vertices.size(); i++){
+
+            for(Edge e: vertices.get(i)){
+
+                System.out.printf("%s -%d-> %s\n", reads.get(i), e.weight, reads.get(e.to));
+                assert reads.get(i).substring(reads.get(i).length() - e.weight).equals( reads.get(e.to).substring(0, e.weight ) );
+             }
+
+
+
+        }
+    }
+}
+
+class Edge implements Comparable<Edge> {
+    int to;
+    int weight;
+
+    Edge(int to, int weight) {
+        this.to = to;
+        this.weight = weight;
+    }
+
+    @Override
+    public int compareTo(Edge o) {
+        return o.weight - this.weight;
     }
 }
