@@ -167,7 +167,7 @@ public class SuffixArrayMatching {
 
             if( (start+m < n) && pattern.equals( text.substring(start, start+m) ) ){
                 result.add( start );
-                //System.out.println(text.substring(start, start+m));
+                //System.out.println(text.substring(start, start+read_length));
             }
 
         }

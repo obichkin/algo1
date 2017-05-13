@@ -72,15 +72,15 @@ public class LpBigDecimal {
         n = a0.length;
         m = a0[0].length - 1;
 
-        //a = new double[n][1+m+n+n];
+        //a = new double[n][1+read_length+n+n];
         A = new BigDecimal[n][1+m+n+n];
         //b = new double[n];
         B = new BigDecimal[n];
-        //c = new double[1+m+n+n];
+        //c = new double[1+read_length+n+n];
         C = new BigDecimal[1+m+n+n];
-        //x = new double[m];
+        //x = new double[read_length];
         X = new BigDecimal[m];
-        //w = new double[1+m+n+n];  //objective function phase1
+        //w = new double[1+read_length+n+n];  //objective function phase1
         W = new BigDecimal[1+m+n+n];
 
 
@@ -94,7 +94,7 @@ public class LpBigDecimal {
 
         for(int i=0; i<n; i++){
             Arrays.fill(A[i], zeroMc);
-            //a[i] = Arrays.copyOf(a0[i], 1 + m + n + n);
+            //a[i] = Arrays.copyOf(a0[i], 1 + read_length + n + n);
             //a[i][n+i+1] = 1;
 
             for(int j=0; j<1+m; j++){
@@ -116,10 +116,10 @@ public class LpBigDecimal {
         for(int i=0; i<n; i++){
             //if(b[i]<0){
             //    b[i] = -b[i];
-            //    for(int j=1; j< 1+m+n; j++){
+            //    for(int j=1; j< 1+read_length+n; j++){
             //        a[i][j] = -a[i][j];
             //    }
-            //    a[i][1+m+n+i] = 1;
+            //    a[i][1+read_length+n+i] = 1;
             //}
 
             if(B[i].compareTo(zeroMc) < 0 ){
@@ -135,9 +135,9 @@ public class LpBigDecimal {
 
         //calculating W  objective function with artificials
         for(int i=0; i<n; i++){
-            //if(a[i][1+m+n+i] == 1 ){
+            //if(a[i][1+read_length+n+i] == 1 ){
             //    w_value -= b[i];
-            //    for(int j=0; j<1+m+n; j++){
+            //    for(int j=0; j<1+read_length+n; j++){
             //        w[j] -= a[i][j];
             //    }
             //}
@@ -354,14 +354,14 @@ public class LpBigDecimal {
     static void feasibleTest() throws LpSolveException {
 
         int n=10;
-        int m=9;
+        int read_length=9;
 
-        double[][] a0 = new double[n][m+1];
-        BigDecimal[][] A0 = new BigDecimal[n][m+1];
+        double[][] a0 = new double[n][read_length+1];
+        BigDecimal[][] A0 = new BigDecimal[n][read_length+1];
         double[] b0 = new double[n];
         BigDecimal[] B0 = new BigDecimal[n];
-        double[] c0 = new double[m+1];
-        BigDecimal[] C0 = new BigDecimal[m+1];
+        double[] c0 = new double[read_length+1];
+        BigDecimal[] C0 = new BigDecimal[read_length+1];
 
         a0[0] = new double[]{0, 17, 39, 69, 62, 72, -76, -57, -37, -16};      b0[0] = 4839;
         a0[1] = new double[]{0, 19, 11, -84, -30, -69, 65, 29, -9, -67 };    b0[1] = -7430;
@@ -380,19 +380,19 @@ public class LpBigDecimal {
 
         for(int i=0; i<n; i++){
 
-            for(int j=0; j<=m; j++){
+            for(int j=0; j<=read_length; j++){
                 A0[i][j] = new BigDecimal(a0[i][j], mc);
             }
             B0[i] = new BigDecimal(b0[i], mc);
 
         }
 
-        for(int j=0; j<=m; j++){
+        for(int j=0; j<=read_length; j++){
             C0[j] = new BigDecimal(c0[j], mc);
         }
 
 
-        LpSolve lpSolve = LpSolve.makeLp(0, m);
+        LpSolve lpSolve = LpSolve.makeLp(0, read_length);
         lpSolve.setVerbose(1);
 
         for(int i=0; i<n; i++){
@@ -451,11 +451,11 @@ public class LpBigDecimal {
     static void unboundedTest() throws LpSolveException {
 
         int n=2;
-        int m=2;
+        int read_length=2;
 
-        double[][] a0 = new double[n][m+1];
+        double[][] a0 = new double[n][read_length+1];
         double[] b0 = new double[n];
-        double[] c0 = new double[m+1];
+        double[] c0 = new double[read_length+1];
 
         a0[0] = new double[]{0, 0, -6};    b0[0] = -6;
         a0[1] = new double[]{0, 0, 6};     b0[1] = 6;
@@ -464,7 +464,7 @@ public class LpBigDecimal {
         c0 = new double[]{0, 5, 4};
 
 
-        LpSolve lpSolve = LpSolve.makeLp(0, m);
+        LpSolve lpSolve = LpSolve.makeLp(0, read_length);
         lpSolve.setVerbose(1);
 
         lpSolve.addConstraint(a0[0], LpSolve.LE, b0[0]);
@@ -509,11 +509,11 @@ public class LpBigDecimal {
 
 
         int n=2;
-        int m=2;
+        int read_length=2;
 
-        double[][] a0 = new double[n][m+1];
+        double[][] a0 = new double[n][read_length+1];
         double[] b0 = new double[n];
-        double[] c0 = new double[m+1];
+        double[] c0 = new double[read_length+1];
 
         a0[0] = new double[]{0, -5, -5};    b0[0] = -4;
         a0[1] = new double[]{0, 6, -1};     b0[1] = 0;
@@ -522,7 +522,7 @@ public class LpBigDecimal {
         c0 = new double[]{0, 1, -1};
 
 
-        LpSolve lpSolve = LpSolve.makeLp(0, m);
+        LpSolve lpSolve = LpSolve.makeLp(0, read_length);
         lpSolve.setVerbose(1);
 
         lpSolve.addConstraint(a0[0], LpSolve.LE, b0[0]);
@@ -559,11 +559,11 @@ public class LpBigDecimal {
     static void degeneracyTest() throws LpSolveException {
 
         int n=3;
-        int m=4;
+        int read_length=4;
 
-        double[][] a0 = new double[n][m+1];
+        double[][] a0 = new double[n][read_length+1];
         double[] b0 = new double[n];
-        double[] c0 = new double[m+1];
+        double[] c0 = new double[read_length+1];
 
         a0[0] = new double[]{0, 0.5, -5.5, -2.5, 9};      b0[0] = 0;
         a0[1] = new double[]{0, 0.5, -1.5, -0.5, 1};    b0[1] = 0;
@@ -573,7 +573,7 @@ public class LpBigDecimal {
         c0 = new double[]{0, 10, -57, -9, -24};
 
 
-        LpSolve lpSolve = LpSolve.makeLp(0, m);
+        LpSolve lpSolve = LpSolve.makeLp(0, read_length);
         lpSolve.setVerbose(1);
 
         lpSolve.addConstraint(a0[0], LpSolve.LE, b0[0]);

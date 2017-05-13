@@ -78,15 +78,15 @@ public class DietWA {
             n = a0.length;
             m = c0.length - 1;
 
-            //a = new double[n][1+m+n+n];
+            //a = new double[n][1+read_length+n+n];
             A = new BigDecimal[n][1+m+n+n];
             //b = new double[n];
             B = new BigDecimal[n];
-            //c = new double[1+m+n+n];
+            //c = new double[1+read_length+n+n];
             C = new BigDecimal[1+m+n+n];
-            //x = new double[m];
+            //x = new double[read_length];
             X = new BigDecimal[m];
-            //w = new double[1+m+n+n];  //objective function phase1
+            //w = new double[1+read_length+n+n];  //objective function phase1
             W = new BigDecimal[1+m+n+n];
 
 
@@ -100,7 +100,7 @@ public class DietWA {
 
             for(int i=0; i<n; i++){
                 Arrays.fill(A[i], BigDecimal.ZERO);
-                //a[i] = Arrays.copyOf(a0[i], 1 + m + n + n);
+                //a[i] = Arrays.copyOf(a0[i], 1 + read_length + n + n);
                 //a[i][n+i+1] = 1;
 
                 for(int j=0; j<1+m; j++){
@@ -122,10 +122,10 @@ public class DietWA {
             for(int i=0; i<n; i++){
                 //if(b[i]<0){
                 //    b[i] = -b[i];
-                //    for(int j=1; j< 1+m+n; j++){
+                //    for(int j=1; j< 1+read_length+n; j++){
                 //        a[i][j] = -a[i][j];
                 //    }
-                //    a[i][1+m+n+i] = 1;
+                //    a[i][1+read_length+n+i] = 1;
                 //}
 
                 if(B[i].compareTo(BigDecimal.ZERO) < 0 ){
@@ -141,9 +141,9 @@ public class DietWA {
 
             //calculating W  objective function with artificials
             for(int i=0; i<n; i++){
-                //if(a[i][1+m+n+i] == 1 ){
+                //if(a[i][1+read_length+n+i] == 1 ){
                 //    w_value -= b[i];
-                //    for(int j=0; j<1+m+n; j++){
+                //    for(int j=0; j<1+read_length+n; j++){
                 //        w[j] -= a[i][j];
                 //    }
                 //}

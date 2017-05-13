@@ -2,6 +2,7 @@ import org.junit.Test;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,19 +13,9 @@ import java.util.Random;
  */
 public class X174_Error_FreeTest {
 
-    void singleFileTest(String filename) throws FileNotFoundException {
+    void singleFileTest(String filename) throws IOException {
         X174_Error_Free x174 = new X174_Error_Free( new InputStreamReader(new FileInputStream(filename)));
-
-        String s = "AAACCAAGT$";
-        int n = s.length();
-        Integer suffix_array[] = new Integer[n];
-        Integer startSuffix = 0;
-
-        System.out.println( s + " " + x174.bwt(s, suffix_array) + " " + x174.inverseBWT( x174.bwt(s, suffix_array) ) );
-
-        for(int i=0; i<n; i++){
-            System.out.println( s.substring( suffix_array[i] ) );
-        }
+        x174.run();
 
     }
 
@@ -99,7 +90,6 @@ public class X174_Error_FreeTest {
 
     }
 
-
     void BWMatchTest(String filename) throws FileNotFoundException {
         X174_Error_Free x174 = new X174_Error_Free( new InputStreamReader(new FileInputStream(filename)));
 
@@ -137,11 +127,11 @@ public class X174_Error_FreeTest {
     }
 
     @Test
-    public void stressTest() throws FileNotFoundException {
+    public void stressTest() throws IOException {
         String filename = "c:\\temp\\5";
 
-        //singleFileTest(filename);
-        stressBWTTest(filename);
+        singleFileTest(filename);
+        //stressBWTTest(filename);
 
         //BWMatchTest(filename);
     }

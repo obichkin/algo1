@@ -46,15 +46,15 @@ public class Diet {
 
     int solveDietProblem(int n, int m, BigDecimal[][] A, BigDecimal[] b, BigDecimal[] c, BigDecimal[] x) {
 
-        //double[][] a_full = new double[ n + m + 1 ][m];
+        //double[][] a_full = new double[ n + read_length + 1 ][read_length];
         BigDecimal[][] a_full = new BigDecimal[ n + m + 1 ][m];
-        //double[] b_full = new double[ n + m + 1 ];
+        //double[] b_full = new double[ n + read_length + 1 ];
         BigDecimal[] b_full = new BigDecimal[ n + m + 1 ];
-        //double[][] a_current = new double[m][m];
+        //double[][] a_current = new double[read_length][read_length];
         BigDecimal[][] a_current = new BigDecimal[m][m];
-        //double[] b_current = new double[m];
+        //double[] b_current = new double[read_length];
         BigDecimal[] b_current = new BigDecimal[m];
-        //double[] x_current = new double[m];
+        //double[] x_current = new double[read_length];
         BigDecimal[] x_current = new BigDecimal[m];
 
         //double result_current;
@@ -79,7 +79,7 @@ public class Diet {
         }
 
 
-        //Arrays.fill(a_full[n+m], 1);
+        //Arrays.fill(a_full[n+read_length], 1);
         for(int i=0; i<a_full[n+m].length; i++){
             a_full[n+m][i] = BigDecimal.valueOf(1);
         }
@@ -339,7 +339,7 @@ public class Diet {
         int n = nextInt();
         int m = nextInt();
         int x;
-        //double[][] A = new double[n][m];
+        //double[][] A = new double[n][read_length];
         BigDecimal[][] A = new BigDecimal[n][m];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
@@ -362,14 +362,14 @@ public class Diet {
                 b[i] = BigDecimal.valueOf( x );
         }
 
-        //double[] c = new double[m];
+        //double[] c = new double[read_length];
         BigDecimal[] c = new BigDecimal[m];
         for (int i = 0; i < m; i++) {
             //c[i] = nextInt();
             c[i] = BigDecimal.valueOf( nextInt());
         }
 
-        //double[] ansx = new double[m];
+        //double[] ansx = new double[read_length];
         BigDecimal[] ansx = new BigDecimal[m];
 
         int anst = solveDietProblem(n, m, A, b, c, ansx);

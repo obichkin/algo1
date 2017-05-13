@@ -9,6 +9,22 @@ import java.util.*;
 public class X174_Error_Free {
     BufferedReader reader;
     char[] alphabet = new char[]{'$', 'A', 'C', 'G', 'T' };
+    int n = 5;  //number of strings
+    int read_length = 3;  //sting length
+    List<String> reads;
+    String FM_index;
+    int FM_length;
+    Integer suffix_array[];
+    String bwt;
+    Map<Character, Integer> starts;
+    Map<Character, int[]> occ_counts_before;
+    int[] counts;
+    int[] last2first;
+
+
+    class Edge {
+
+    }
 
     public static void main(String[] args) throws IOException {
         new X174_Error_Free( new InputStreamReader(System.in ) ).run();
@@ -216,6 +232,47 @@ public class X174_Error_Free {
 
     }
 
+    public void overlapRead(int read_id){
+        String pattern = reads.get(read_id);
+
+        int n = bwt.length();
+        int m = pattern.length() - 1;
+        int top=0, bottom = n-1;
+        int overlap;
+
+        char character;
+
+        while(top <= bottom){
+            if(m > -1){
+                character = pattern.charAt(m);
+                m--;
+
+                if(!starts.containsKey(character)){
+                    return;
+                }
+
+                top = last2first[ starts.get(character) ] + occ_counts_before.get(character)[top];
+                bottom = last2first[starts.get(character)] + occ_counts_before.get(character)[bottom+1] - 1;
+
+                for(int i=top; i<=bottom; i++){
+                    if( bwt.charAt(i) == '$' &&  //this is the beginning of the string
+                           suffix_array[i] != read_id*(read_length+1)    ){      //exclude overlap of read_id with itself
+                        overlap = pattern.length() - 1 - m;
+
+                        String string = FM_index.substring( suffix_array[i], suffix_array[i] + read_length);
+
+                        System.out.println(pattern + " overlaps by " + overlap + " with " + string);
+                    }
+
+                }
+
+            }else{
+                //return bottom - top + 1;
+                return;
+            }
+        }
+
+    }
 
     String inverseBWT(String bwt) {
         StringBuilder result = new StringBuilder();
@@ -250,10 +307,8 @@ public class X174_Error_Free {
     }
 
     void run() throws IOException {
-        int n = 5;  //number of strings
-        int m = 3;  //sting length
 
-        List<String> reads = new ArrayList<>();
+        reads = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
         String s;
 
@@ -265,14 +320,14 @@ public class X174_Error_Free {
             sb.append(s); sb.append("$");
         }
 
-        String FM_index = sb.toString();
-        int FM_length = FM_index.length();
-        Integer suffix_array[] = new Integer[FM_length];
-        String bwt = bwt( FM_index, suffix_array );
-        Map<Character, Integer> starts = new HashMap<Character, Integer>();
-        Map<Character, int[]> occ_counts_before = new HashMap<Character, int[]>();
-        int[] counts = new int[128];
-        int[] last2first = new int[FM_index.length()];
+        FM_index = sb.toString();
+        FM_length = FM_index.length();
+        suffix_array = new Integer[FM_length];
+        bwt = bwt( FM_index, suffix_array );
+        starts = new HashMap<Character, Integer>();
+        occ_counts_before = new HashMap<Character, int[]>();
+        counts = new int[128];
+        last2first = new int[FM_index.length()];
 
         PreprocessBWT(bwt, starts, occ_counts_before, counts, last2first);
 
@@ -280,8 +335,8 @@ public class X174_Error_Free {
 
         //for(int i=0; i<FM_length; i++)            System.out.println(FM_index.substring(suffix_array[i]));
         for(int i=0; i<n; i++){
-            int x = CountOccurrences( reads.get(i), bwt, starts, occ_counts_before, last2first);
-            System.out.println( reads.get(i) + " " + x );
+            overlapRead(i);
+
         }
 
 

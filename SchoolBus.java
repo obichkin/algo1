@@ -86,7 +86,7 @@ public class SchoolBus {
 
         if (bestResult == INF) return new Answer(-1, new ArrayList<>());
 
-        //for(int i=0; i<m; i++)            System.out.printf("%s \t\t\t %s\n", printSet(i), Arrays.toString(path[i]));
+        //for(int i=0; i<read_length; i++)            System.out.printf("%s \t\t\t %s\n", printSet(i), Arrays.toString(path[i]));
          
         set = m-1;
         myBestPath.add(lastVertex + 1);
