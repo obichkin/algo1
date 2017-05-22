@@ -13,36 +13,41 @@ public class X174_Error_FreeTest {
         x174.run();
 
 
+        System.out.println("constructed Genome: " + x174.constructedGenome);
+        System.out.printf("constructed genome length: %d\n", x174.constructedGenome.length() );
+        for(int i=0; i<X174_Error_Free.number_of_reads; i++){
+            if(!x174.visited[i]){
+                System.out.println("not visited : " + i + " " + x174.reads.get(i));
+            }
+
+        }
+
+
     }
 
     void stressGraphTest(String filename) throws IOException {
         PrintWriter out;
 
         Random random = new Random();
-        int genom_length = 30000;
-        int read_length = 100;
-        int number_of_reads = 1618;
-        char genom[] = new char[genom_length];
-        char read[] = new char[read_length];
+
+        char genom[] = new char[X174_Error_Free.genom_length];
+        char read[] = new char[X174_Error_Free.read_length];
         char alphabet[] = "ACGT".toCharArray();
 
 
         int total_not_contains = 0;
 
-        for(int z=0; z<100; z++){
-            for(int i=0; i<genom_length; i++){
+        for(int z=0; z<1; z++){
+            for(int i=0; i<X174_Error_Free.genom_length; i++){
                 genom[i] = alphabet[ random.nextInt(4) ];
             }
 
-            //System.out.println( new String(genom) );
-
-
             out = new PrintWriter(new FileOutputStream(filename));
-            for(int m=0; m<number_of_reads; m++){
-                int start = random.nextInt(genom_length);
+            for(int m=0; m<X174_Error_Free.number_of_reads; m++){
+                int start = random.nextInt(X174_Error_Free.genom_length);
 
-                for(int j=0; j<read_length; j++){
-                    read[j] =  genom[ (start + j)%genom_length ];
+                for(int j=0; j<X174_Error_Free.read_length; j++){
+                    read[j] =  genom[ (start + j)%X174_Error_Free.genom_length ];
                 }
                 out.println(new String(read));
 
@@ -54,7 +59,15 @@ public class X174_Error_FreeTest {
             x174.run();
             //x174.graph.printGraph(x174.reads);
 
-            String doubleGenom = x174.genom.concat(x174.genom);
+            String doubleGenom = x174.constructedGenome.concat(x174.constructedGenome);
+
+
+            //for(int i=0; i<X174_Error_Free.number_of_reads; i++){
+//                if(!x174.visited[i]){
+//                    System.out.println("not visited : " + x174.reads.get(i));
+//                }
+//            }
+
 
             int contains=0, not_contains=0;
             for(String s: x174.reads){
@@ -66,13 +79,15 @@ public class X174_Error_FreeTest {
 
             }
 
-            System.out.printf("genome length: %d\n", genom.length);
+            System.out.println("initial Genome: " + new String(genom) );
+            System.out.println("constructed Genome: " + x174.constructedGenome);
+            System.out.printf("constructed genome length: %d\n", x174.constructedGenome.length() );
             System.out.printf("contains %d ; not contains %d\n", contains, not_contains);
             total_not_contains+=not_contains;
 
         }
 
-        System.out.printf("average not contains : %d", total_not_contains / 100);
+
 
     }
 
